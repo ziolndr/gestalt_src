@@ -190,11 +190,11 @@ const HeroSection = () => (
       <AnimatedGrid />
       <div className="relative z-10 h-full flex flex-col justify-center p-12">
         <h1 className={`text-7xl font-bold mb-6 ${chakraPetch.className} gradient-text`}>
-          Gestalts!
+          Gestalt
         </h1>
 
         <h2 className={`text-3xl font-light mb-4 ${spaceGrotesk.className} text-[#4F4F4F]`}>
-          Federal Code Intelligence Platform
+          Federal Intelligence Platform
         </h2>
         <p className="text-lg font-light leading-relaxed mb-8 text-[#4F4F4F]">
           Empowering federal agencies with AI-driven collaboration, SHARE IT Act compliance, and secure cross-government code sharing. Ready for the June 2025 mandate.
