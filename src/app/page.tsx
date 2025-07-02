@@ -194,7 +194,7 @@ const HeroSection = () => (
         </h1>
 
         <h2 className={`text-3xl font-light mb-4 ${spaceGrotesk.className} text-[#4F4F4F]`}>
-          Federal Intelligence Platform
+          Federal Code Intelligence Platform
         </h2>
         <p className="text-lg font-light leading-relaxed mb-8 text-[#4F4F4F]">
           Empowering federal agencies with AI-driven collaboration, SHARE IT Act compliance, and secure cross-government code sharing. Ready for the June 2025 mandate.
