@@ -14,7 +14,7 @@ const MilitaryTimeTicker = () => {
     const updateTimes = () => {
       const now = new Date();
       const startOfYear = new Date(now.getFullYear(), 0, 0);
-      const diff = now - startOfYear;
+      const diff = now.getTime() - startOfYear.getTime(); // ✅ TS-safe fix
       const oneDay = 1000 * 60 * 60 * 24;
       const dayOfYear = Math.floor(diff / oneDay);
 
