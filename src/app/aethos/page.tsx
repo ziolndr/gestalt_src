@@ -6,10 +6,18 @@ import { useState } from 'react'
 import { BellIcon, ChatBubbleLeftRightIcon, DocumentTextIcon, UserGroupIcon, CodeBracketIcon, GlobeAltIcon, MoonIcon, SunIcon } from '@heroicons/react/24/solid'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
+type AethosResult = {
+  id: number;
+  name: string;
+  description: string;
+  agency: string;
+  url: string;
+};
+
 export default function Dashboard() {
   const { theme, toggleTheme } = useTheme();
   const [aethosQuery, setAethosQuery] = useState('');
-  const [aethosResults, setAethosResults] = useState([]);
+  const [aethosResults, setAethosResults] = useState<AethosResult[]>([]);
 
   const [userData] = useState({
     firstName: 'Vector',
@@ -18,17 +26,16 @@ export default function Dashboard() {
     position: 'Program Lead',
     agency: 'Department of Justice',
     clearanceLevel: 'TS/SCI',
-  })
+  });
 
   const handleAethosSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    // Here you would typically make an API call to your AETHOS backend
-    // For now, we'll just simulate a response
-    const mockResults = [
+    e.preventDefault();
+    const mockResults: AethosResult[] = [
       { id: 1, name: 'Security Protocol Alpha', description: 'Advanced encryption method for interagency communication.', agency: 'NSA', url: '#' },
       { id: 2, name: 'Project Firewall', description: 'Next-gen firewall system for government networks.', agency: 'DHS', url: '#' },
     ];
     setAethosResults(mockResults);
-  }
+  };
 
   return (
     <div className="min-h-screen bg-[#F0F4F8] dark:bg-[#1A202C] text-[#2D3748] dark:text-[#E2E8F0]">
@@ -59,12 +66,11 @@ export default function Dashboard() {
       <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8">
         {/* Left sidebar - Profile summary and Quick Links */}
         <div className="lg:w-1/4">
-          {/* ... (keep the profile and quick links sections as they were) ... */}
+          {/* ... */}
         </div>
 
         {/* Main feed - Now includes AETHOS search */}
         <div className="lg:w-1/2">
-          {/* AETHOS Search */}
           <div className="bg-white dark:bg-[#2D3748] rounded-lg p-6 mb-8 shadow-sm">
             <h2 className="text-2xl font-bold mb-4">AETHOS - Federal Code Search</h2>
             <form onSubmit={handleAethosSearch} className="mb-4">
@@ -101,18 +107,13 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Create post */}
-          {/* ... (keep the create post section as it was) ... */}
-
-          {/* Feed */}
-          {/* ... (keep the feed section as it was) ... */}
+          {/* Additional content... */}
         </div>
 
-        {/* Right sidebar - Notifications and Trending */}
         <div className="lg:w-1/4">
-          {/* ... (keep the notifications and trending sections as they were) ... */}
+          {/* ... */}
         </div>
       </div>
     </div>
-  )
+  );
 }
