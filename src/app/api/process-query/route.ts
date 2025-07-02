@@ -21,11 +21,11 @@ async function fetchFileContent(url: string): Promise<string | null> {
 function calculateRelevance(query: string, project: any, fileContent: string | null = null) {
   const searchTerms = query.toLowerCase().split(' ');
   let projectText = `${project.name} ${project.description} ${project.tags.join(' ')}`.toLowerCase();
-  
+
   if (fileContent) {
     projectText += ' ' + fileContent.toLowerCase();
   }
-  
+
   return searchTerms.reduce((score, term) => {
     return score + (projectText.includes(term) ? 1 : 0);
   }, 0) / searchTerms.length;
@@ -34,27 +34,25 @@ function calculateRelevance(query: string, project: any, fileContent: string | n
 export async function POST(request: NextRequest) {
   try {
     const { query, analysisType, repositoryURL } = await request.json();
-    
+
     const dataFilePath = path.join(process.cwd(), 'fed-code.json');
     const fileContents = await fs.readFile(dataFilePath, 'utf8');
     const fedCodeData = JSON.parse(fileContents);
-    
+
     let results = [];
 
     if (analysisType === 'code' && repositoryURL) {
-      // Analyze a single repository
       const codeFiles = await fetchGithubRepoContents(repositoryURL);
       results = await analyzeCode(query, codeFiles);
       results = results.map(result => ({
         ...result,
         repositoryURL,
-        agency: 'N/A', // You might want to determine this based on the repositoryURL
+        agency: 'N/A',
         name: 'N/A',
         description: 'N/A',
         tags: []
       }));
     } else {
-      // Existing logic for repository and both analysis types
       for (const agency of fedCodeData) {
         for (const project of agency.projects) {
           let relevance = 0;
@@ -108,7 +106,7 @@ export async function POST(request: NextRequest) {
 async function fetchGithubRepoContents(repositoryURL: string): Promise<any[]> {
   const [_, __, owner, repoName] = repositoryURL.split('/').slice(-4);
   const githubRepoURL = `https://api.github.com/repos/${owner}/${repoName}/contents`;
-  
+
   try {
     const response = await axios.get(githubRepoURL);
     return response.data;
@@ -121,20 +119,16 @@ async function fetchGithubRepoContents(repositoryURL: string): Promise<any[]> {
 async function analyzeCode(query: string, codeFiles: any[]): Promise<any[]> {
   const scriptPath = path.join(process.cwd(), 'scripts', 'code_analysis.py');
   const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
-
-  // Create a temporary file to store the code files
   const tempFilePath = path.join(os.tmpdir(), `code_files_${uuidv4()}.json`);
 
   try {
-    // Write code files to the temporary file
     await fs.writeFile(tempFilePath, JSON.stringify(codeFiles));
 
     return new Promise((resolve, reject) => {
       exec(`${pythonCommand} "${scriptPath}" "${tempFilePath}" "${query}"`, {
         env: { ...process.env, GITHUB_TOKEN: process.env.GITHUB_TOKEN },
-        maxBuffer: 1024 * 1024 * 10, // 10 MB buffer
+        maxBuffer: 1024 * 1024 * 10,
       }, async (error, stdout, stderr) => {
-        // Clean up the temporary file
         await fs.unlink(tempFilePath);
 
         if (error) {
@@ -145,17 +139,23 @@ async function analyzeCode(query: string, codeFiles: any[]): Promise<any[]> {
         if (stderr) {
           console.error(`Script error: ${stderr}`);
         }
+
         try {
           const result = JSON.parse(stdout);
           resolve(result);
         } catch (parseError) {
-          console.error(`Parse error: ${parseError.message}`);
-          console.error(`Stdout: ${stdout}`);
-          reject(`Error parsing result: ${parseError.message}`);
+          if (parseError instanceof Error) {
+            console.error(`Parse error: ${parseError.message}`);
+            console.error(`Stdout: ${stdout}`);
+            reject(`Error parsing result: ${parseError.message}`);
+          } else {
+            console.error('Parse error:', parseError);
+            reject('Unknown parse error occurred.');
+          }
         }
       });
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error writing temporary file: ${error.message}`);
     throw error;
   }
