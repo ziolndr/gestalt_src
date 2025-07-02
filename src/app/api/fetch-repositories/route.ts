@@ -6,12 +6,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const execPromise = util.promisify(exec);
 
+// Define a type to satisfy TS sort
+type ProjectWithRelevance = {
+  relevance: number;
+  [key: string]: any;
+};
+
 // NOTE: AETHOS classification temporarily disabled due to ONNX binary incompatibility on Vercel
 export async function POST(req: NextRequest) {
   const { query } = await req.json();
 
   try {
-    // const classifier = await pipeline('zero-shot-classification');
     const fedCodeData = JSON.parse(
       await fs.readFile(path.join(process.cwd(), 'fed-code.json'), 'utf8')
     );
@@ -25,7 +30,7 @@ export async function POST(req: NextRequest) {
           relevance: Math.random() // placeholder
         }))
       )
-      .sort((a, b) => b.relevance - a.relevance)
+      .sort((a: ProjectWithRelevance, b: ProjectWithRelevance) => b.relevance - a.relevance)
       .slice(0, 5);
 
     return NextResponse.json(results);
