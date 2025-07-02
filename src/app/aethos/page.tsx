@@ -1,3 +1,4 @@
+import React from 'react';
 'use client'
 
 import { useTheme } from '../../ThemeContext'
@@ -19,8 +20,7 @@ export default function Dashboard() {
     clearanceLevel: 'TS/SCI',
   })
 
-  const handleAethosSearch = async (e) => {
-    e.preventDefault();
+  const handleAethosSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     // Here you would typically make an API call to your AETHOS backend
     // For now, we'll just simulate a response
     const mockResults = [
