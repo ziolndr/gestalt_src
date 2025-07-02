@@ -190,7 +190,7 @@ const HeroSection = () => (
       <AnimatedGrid />
       <div className="relative z-10 h-full flex flex-col justify-center p-12">
         <h1 className={`text-7xl font-bold mb-6 ${chakraPetch.className} gradient-text`}>
-          Gestalt
+          Gestalts!
         </h1>
 
         <h2 className={`text-3xl font-light mb-4 ${spaceGrotesk.className} text-[#4F4F4F]`}>
