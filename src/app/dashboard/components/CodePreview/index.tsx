@@ -1,34 +1,61 @@
-import { useState, useEffect } from 'react'
-import SyntaxHighlighter from 'react-syntax-highlighter'
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import { useState, useEffect } from 'react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
-const CodePreview = ({ selectedRepository, selectedFile }) => {
+interface CodePreviewProps {
+  selectedRepository: string;
+  selectedFile: string;
+}
+
+const CodePreview: React.FC<CodePreviewProps> = ({ selectedRepository, selectedFile }) => {
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
 
   useEffect(() => {
-    if (selectedFile) {
-      // Fetch file content
-      fetchFileContent(selectedRepository, selectedFile)
-        .then(content => setCode(content))
-        .catch(error => console.error('Error fetching file content:', error));
+    const fetchCode = async () => {
+      try {
+        const response = await fetch(
+          `https://raw.githubusercontent.com/${selectedRepository}/main/${selectedFile}`
+        );
+        const rawCode = await response.text();
+        setCode(rawCode);
 
-      // Determine language based on file extension
-      const extension = selectedFile.split('.').pop();
-      setLanguage(getLanguageFromExtension(extension));
+        const extension = selectedFile.split('.').pop()?.toLowerCase();
+        switch (extension) {
+          case 'ts':
+          case 'tsx':
+            setLanguage('typescript');
+            break;
+          case 'js':
+          case 'jsx':
+            setLanguage('javascript');
+            break;
+          case 'py':
+            setLanguage('python');
+            break;
+          case 'json':
+            setLanguage('json');
+            break;
+          default:
+            setLanguage('text');
+        }
+      } catch (err) {
+        console.error('Error fetching code:', err);
+        setCode('// Unable to fetch code preview');
+        setLanguage('text');
+      }
+    };
+
+    if (selectedRepository && selectedFile) {
+      fetchCode();
     }
   }, [selectedRepository, selectedFile]);
 
   return (
-    <div className="bg-black p-6 rounded-sm border border-[#2a2a2a]">
-      <h2 className="text-xl font-mono text-green-400 mb-6">Code Preview</h2>
-      {selectedFile ? (
-        <SyntaxHighlighter language={language} style={atomOneDark}>
-          {code}
-        </SyntaxHighlighter>
-      ) : (
-        <p className="text-gray-400">Select a file to preview code</p>
-      )}
+    <div className="bg-gray-900 rounded-lg overflow-hidden">
+      <SyntaxHighlighter language={language} style={atomOneDark} customStyle={{ padding: '1rem', fontSize: '0.85rem' }}>
+        {code}
+      </SyntaxHighlighter>
     </div>
   );
 };
