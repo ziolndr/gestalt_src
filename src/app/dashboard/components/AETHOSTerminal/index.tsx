@@ -1,5 +1,3 @@
-// src/app/dashboard/components/AETHOSTerminal/index.tsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -91,7 +89,7 @@ const AETHOSTerminal: React.FC<AETHOSTerminalProps> = ({
         </AnimatePresence>
       </div>
       <form onSubmit={handleSubmit} className="flex items-center p-4 bg-gray-900">
-        <span className="text-green-500 mr-2">></span>
+        <span className="text-green-500 mr-2">{'>'}</span>
         <input
           type="text"
           value={input}
